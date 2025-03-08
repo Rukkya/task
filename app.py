@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -9,11 +8,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 
-# Load environment variables
-load_dotenv()
-
-# OpenAI API Key (Hardcoded) - Not Recommended for Production
-OPENAI_API_KEY = "sk-proj-REiYSYrtQ7Jk76rSckJa-9xSOXSox_D1-Klcm9l7cR6aMUlgpiWxxpkN"
+# Hardcoded OpenAI API Key (Temporary Fix - Not recommended for production)
+OPENAI_API_KEY = "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"
 
 # Initialize session state
 if 'conversation' not in st.session_state:
@@ -27,7 +23,6 @@ def initialize_chain(uploaded_files):
     
     # Process each uploaded file
     for file in uploaded_files:
-        # Get file extension
         file_extension = os.path.splitext(file.name)[1]
         
         # Save the file temporarily
@@ -41,7 +36,7 @@ def initialize_chain(uploaded_files):
         elif file_extension.lower() == ".txt":
             loader = TextLoader(file.name)
             documents.extend(loader.load())
-            
+        
         # Remove temporary file
         os.remove(file.name)
     
@@ -53,14 +48,14 @@ def initialize_chain(uploaded_files):
     splits = text_splitter.split_documents(documents)
     
     # Create embeddings and vector store
-    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)  # Ensure API key is passed correctly
     vectorstore = Chroma.from_documents(splits, embeddings)
     
     # Create conversation chain
     llm = ChatOpenAI(
         model_name="gpt-3.5-turbo",
         temperature=0.7,
-        openai_api_key=OPENAI_API_KEY
+        openai_api_key=OPENAI_API_KEY  # Ensure API key is passed correctly
     )
     
     memory = ConversationBufferMemory(
