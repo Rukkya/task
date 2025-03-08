@@ -12,6 +12,9 @@ from langchain.memory import ConversationBufferMemory
 # Load environment variables
 load_dotenv()
 
+# OpenAI API Key (Hardcoded) - Not Recommended for Production
+OPENAI_API_KEY = "sk-proj-REiYSYrtQ7Jk76rSckJa-9xSOXSox_D1-Klcm9l7cR6aMUlgpiWxxpkN"
+
 # Initialize session state
 if 'conversation' not in st.session_state:
     st.session_state.conversation = None
@@ -50,13 +53,14 @@ def initialize_chain(uploaded_files):
     splits = text_splitter.split_documents(documents)
     
     # Create embeddings and vector store
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
     vectorstore = Chroma.from_documents(splits, embeddings)
     
     # Create conversation chain
     llm = ChatOpenAI(
         model_name="gpt-3.5-turbo",
         temperature=0.7,
+        openai_api_key=OPENAI_API_KEY
     )
     
     memory = ConversationBufferMemory(
